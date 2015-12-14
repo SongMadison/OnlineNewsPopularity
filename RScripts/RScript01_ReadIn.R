@@ -7,6 +7,10 @@ DataPath <- paste0("./Data/")
 
 library(AUC)
 
+
+#####################################################################################
+
+
 news = read.csv(file = paste0(DataPath,"OnlineNewsPopularity.csv"), header = TRUE)
 trainIdx <- sample(1:nrow(news), 30000) # 30000
 testIdx <- (1:nrow(news))[-trainIdx]  # 9644
@@ -46,11 +50,13 @@ PrepareData <- function(trainData) {
     }
     newData <- data.frame(newData)
 }
-train <- PrepareData(train)
-test <- PrepareData(test)
 
-write.csv(train, paste0(DataPath,"train.csv"))
-write.csv(test, paste0(DataPath,"test.csv"))
+
+# train <- PrepareData(train)
+# test <- PrepareData(test)
+# 
+# write.csv(train, paste0(DataPath,"train.csv"))
+# write.csv(test, paste0(DataPath,"test.csv"))
 
 
 accuracyM <- function(confusionMatrix){
@@ -60,8 +66,8 @@ accuracyM <- function(confusionMatrix){
  
 train.classification <- train[,-1]
 test.classification <- test[,-1]
-train.classification$shares <- as.factor(train.classification$shares>1400)
-test.classification$shares <- as.factor(test.classification$shares>1400)
+train.classification$shares <- ( train.classification$shares>1400)*1.0 
+test.classification$shares <-  ( test.classification$shares>1400)*1.0 
 (table(train.classification$shares)/nrow(train.classification))
 (table(test.classification$shares)/nrow(test.classification))
 
@@ -76,7 +82,7 @@ y.te <- test.classification[,ncol(test.classification)]
 ####################################################################################
 ## Logistic Regression 
 ####################################################################################
-glm.model <- glm(train.classification$shares ~ . ,
+glm.model <- glm(as.factor(train.classification$shares) ~ . ,
                    family = binomial(link = "logit"), data =train.classification)
 
 predicted.logit <- (predict(glm.model,type="response")>0.5)
@@ -134,20 +140,12 @@ model.rf <- randomForest(shares~.,  mtry =10, ntree =500, nodesize = 3,
                           data = train.classification)
 pred.rf <- predict(model.rf,newdata = test.classification,type="prob")
 mean((pred.rf[,2]>.5)!=test.classification$shares )
-
-
-
-
-## Fit the model
-fit.rf  = randomForest(x=x.tr, y=as.factor(y.tr), ntree=1000, mtry=32, 
-                       nodesize=1, importance=T,proximity=TRUE)
-pred.rf = predict(object=fit.rf, newdata=x.te, type='prob')
-mean((pred.rf[,1]<.5)!=y.te)
+#10 ,500 , 3  0.3363749
 
 ## Get the variable importance score
-varimp = varImpPlot(fit.rf,type=2)
+varimp = varImpPlot(model.rf,type=2)
 
-
+library(tree)
 ## Fit classification trees
 newx.tr = data.frame(cbind(y.tr, x.tr))
 newx.te = data.frame(cbind(y.te, x.te))
@@ -161,7 +159,7 @@ mean(pred1.tree!=y.te)
 ## Prune the fitted tree
 cvtree = cv.tree(fit.tree ,FUN=prune.misclass )
 cvtree
-prunedtree = prune.misclass(fit.tree, best=4)
+prunedtree = prune.misclass(fit.tree, best=4)   
 summary(prunedtree)
 plot(prunedtree)
 text(prunedtree)
@@ -172,24 +170,24 @@ mean(pred2.tree!=y.te)
 ##################################################################################################
 ##    Fit boosting
 ##################################################################################################
-
+library(gbm)
 ## Use adaboost loss (exponential loss) with additive model. Conduct 10-fold CV
-fit1 = gbm(y.tr~., n.trees=10000, distribution='adaboost', interaction.depth = 1, cv.folds=10, data=data.tr) 
+fit1.gbm = gbm(shares ~ ., n.trees=1000, distribution='adaboost', interaction.depth = 1, cv.folds=10, data=train.classification) 
 
 ## Output the cv-errors.  This is NOT misclassificaiton error
-fit1$cv.error 
+fit1.gbm$cv.error 
 
 ## Find the best iteration number
-best.iter <- gbm.perf(fit1, method="cv") 
+best.iter <- gbm.perf(fit1.gbm, method="cv") 
 
 ## Prediction on test set
-pred1 = (predict(fit1, data.te, n.trees=best.iter)>0)*TRUE 
+pred1 = (predict(fit1.gbm, x.te, n.trees=best.iter)>0)*TRUE 
 
 ## Calculate misclassification error on test data
 mean(pred1!=y.te) 
 
 ## report the importance score of variables
-summary(fit1)
+summary(fit1.gbm)
 
 
 
@@ -197,10 +195,11 @@ summary(fit1)
 ##################################################################################################
 ## Fit SVM
 ##################################################################################################
-
+library(e1071)
 ## Select the best cost parameter with linear kernel
+
 tune1 = tune(svm, train.x=as.matrix(x.tr), train.y=as.factor(y.tr), kernel='linear',
-             range=list(cost=2^seq(-5,5,length=100)), 
+             range=list(cost=2^seq(-5,5,length=10)), 
              control=tune.control(sampling='cross', cross=10)
 )
 
@@ -219,3 +218,5 @@ tune2 = tune(svm, train.x=as.matrix(x.tr),
 fit2.svm =  svm(x.tr, as.factor(y.tr), kernel='radial', cost=2, gamma=0.03125)
 pred2.svm = predict(fit2.svm, x.te)
 mean(pred2.svm!=y.te) 
+
+
