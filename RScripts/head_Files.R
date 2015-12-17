@@ -3,7 +3,7 @@
 # which (getCRANmirrors(all = FALSE, local.only = FALSE)$Name == 'USA (IA)')
 chooseCRANmirror(graphics = F, ind = 99 )
 
-Packages <- c("e1071", "tree", "randomForest", "gbm", "glmnet", "AUC")
+Packages <- c("e1071", "tree", "randomForest", "gbm", "glmnet", "AUC","rpart")
 
 ##for loop for requiring packages and installiing them if something doesn't exist 
 for (Package in Packages){

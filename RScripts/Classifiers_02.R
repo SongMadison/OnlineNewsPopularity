@@ -9,8 +9,6 @@ source("./RScripts/fn_Library.R")
 
 
 #####################################################################################
-
-
 train <- read.csv("./Data/train.csv")
 test <- read.csv("./Data/test.csv")
 
@@ -35,6 +33,10 @@ x.tr <- x.transformed$train
 x.te <- x.transformed$test
 newx.tr = data.frame(cbind(y.tr, x.tr))
 newx.te = data.frame(cbind(y.te, x.te))
+
+accuracy<- list()
+aucScore <- list()
+probability <- list()
 ####################################################################################
 ## Logistic Regression 
 ####################################################################################
@@ -49,12 +51,15 @@ mean(y.tr==predicted.tr)
 
 mean(y.te==(predict(fit.glm,newdata = x.te,type="response")>0.5))
 
-library(AUC)
 auc(roc.logit.tr <- roc(fit.glm$fitted,as.factor(y.tr)))
 plot(roc.logit.tr, as.factor(y.tr))
-auc( roc.glm.te <- roc( predict(fit.glm,newdata = x.te,type = "response") ,as.factor(y.te) ))
-plot(roc.glm.te)
 
+y.prob <- predict(fit.glm,newdata = x.te,type = "response")
+probability$glm <- y.prob
+
+(aucScore$glm <- auc( roc.glm.te <- roc( y.prob ,as.factor(y.te) )) )
+
+(accuracy$glm <- unlist(accuracyM( (y.prob>0.5)*1, y.te )))
 
 
 #####################################################################################
@@ -62,8 +67,7 @@ plot(roc.glm.te)
 #####################################################################################
 ## Select lambda using 10-fold CV
 library(glmnet)
-
-cv.lasso = cv.glmnet(as.matrix(x.tr), as.matrix(y.tr), family='binomial', nfolds=10)
+cv.lasso = cv.glmnet(as.matrix(x.tr), as.matrix(as.factor(y.tr)), family='binomial', nfolds=10)
 lambda.min = cv.lasso$lambda.min
 lambda.1se = cv.lasso$lambda.1se ## Result in a sparser model
 
@@ -71,9 +75,11 @@ lambda.1se = cv.lasso$lambda.1se ## Result in a sparser model
 fit.min = glmnet(as.matrix(x.tr), as.matrix(y.tr), family='binomial', lambda=lambda.min)
 fit.min$a0 ## intercept
 fit.min$beta ## betahat in logistic regression
-pred.min = predict(fit.min, as.matrix(x.te), type='class')
+pred.min = predict(fit.min, as.matrix(x.te), type='response')
+probability$glmnet <- pred.min
+(aucScore$glmnet <- auc( roc(pred.min ,as.factor(y.te) )) )
+(accuracy$glmnet <- unlist(accuracyM((pred.min>0.5)*1,y.te)))
 
-mean(pred.min==y.te)
 
 ## Fit the final model with lambda.1se
 fit.1se = glmnet(as.matrix(x.tr), as.matrix(y.tr), family='binomial', lambda=lambda.1se)
@@ -88,112 +94,80 @@ mean(pred.1se==y.te)
 library(randomForest)
 ## Try different mtryStart values manually
 set.seed(111)
-tune.rf = tuneRF(x=x.tr, 
-                 y=as.factor(y.tr), ntree=1000, mtryStart=4, stepFactor=2,
+tune.rf = tuneRF(x=x.tr, y=as.factor(y.tr), ntree=1000, mtryStart=4, stepFactor=2,
                  improve=0.05, nodesize=1, trace=T, plot=T,doBest=T)
 
-fit.rf <- randomForest(as.factor(shares)~.,  mtry =8, ntree =500, nodesize = 1,
-                       data = train)
-pred.rf <- predict(fit.rf,newdata = test,type="prob")
+fit.rf <- randomForest(as.factor(y.tr)~.,  mtry =8, ntree =1000, nodesize = 1,
+                       data = newx.tr)
+pred.rf <- predict(fit.rf,newdata = x.te,type="prob")
 mean((pred.rf[,2]>.5)==test$shares )
 #10 ,500 , 3  0.3363749
-
+probability$rf <- pred.rf [,2]
+(aucScore$rf <- auc(roc( probability$rf,as.factor(y.te) )) )
+(accuracy$rf <- unlist(accuracyM((pred.rf[,2]>0.5)*1,y.te)))
 ## Get the variable importance score
 varimp = varImpPlot(fit.rf,type=2)
 
 
-library(tree)
-## Fit classification trees
-newx.tr = data.frame(cbind(y.tr, x.tr))
-newx.te = data.frame(cbind(y.te, x.te))
-fit.tree = tree(as.factor(y.tr)~.,  data=newx.tr)
-summary(fit.tree)
-plot(fit.tree)
-text(fit.tree)
-pred1.tree = predict(fit.tree,newx.te,type="class")
-mean(pred1.tree!=y.te)
-
-## Prune the fitted tree
-cvtree = cv.tree(fit.tree ,FUN=prune.misclass )
-cvtree
-prunedtree = prune.misclass(fit.tree, best=4)   
-summary(prunedtree)
-plot(prunedtree)
-text(prunedtree)
-pred2.tree = predict(prunedtree,newx.te,type="class")
-mean(pred2.tree!=y.te)
-
-
 library(rpart)
-fit.rpart <- rpart(as.factor(shares) ~ ., method="class", 
-                   control = rpart.control(minsplit=30, cp=0.001)  ,data=train)
-plotcp(fit.rpart)
-plot(fit.rpart)
-text(fit.rpart)
-pfit<- prune(fit.rpart, cp=   fit.rpart$cptable[which.min(fit.rpart$cptable[,"xerror"]),"CP"])
-summary(pfit)
+fit.rpart <- rpart(as.factor(y.tr) ~ ., method="class", 
+                   control = rpart.control(minsplit=10, cp=0.001),data=newx.tr)
+xmat <- xpred.rpart(fit.rpart)
+xmat <- 1*(xmat==2)
+cv.rpart <- apply (X = xmat, MARGIN = 2,function(x) mean(x==y.tr))
+cps <- as.numeric(colnames(xmat))
+(cp.max <- cps[which(cv.rpart == max(cv.rpart))])
+
+#“vector”, “prob”, “class”, “matrix”
+fit.rpart <- rpart(as.factor(y.tr) ~ ., method="class", 
+                   control = rpart.control(minsplit=10, cp=cp.max),data=newx.tr)
+probability$rpart <- predict(fit.rpart,newdata = x.te,type = "prob")[,2]
+(aucScore$rpart <- auc(roc( probability$rpart,as.factor(y.te) )) )
+(accuracy$rpart <- unlist(accuracyM(1*(probility$rpart>0.5), y.true =y.te)))
+
 
 ##################################################################################################
 ##    Fit boosting
 ##################################################################################################
 library(gbm)
 ## Use adaboost loss (exponential loss) with additive model. Conduct 10-fold CV
-fit1.gbm = gbm(shares ~ ., n.trees=1000, distribution='adaboost', interaction.depth = 1, cv.folds=10, data=train) 
+fit.gbm = gbm(y.tr ~ ., n.trees=10000, distribution='adaboost', interaction.depth = 1, cv.folds=10, data=newx.tr) 
 
 ## Output the cv-errors.  This is NOT misclassificaiton error
-fit1.gbm$cv.error 
+fit.gbm$cv.error 
 
 ## Find the best iteration number
-best.iter <- gbm.perf(fit1.gbm, method="cv") 
+best.iter <- gbm.perf(fit.gbm, method="cv") 
 
 ## Prediction on test set
-pred1 = (predict(fit1.gbm, x.te, n.trees=best.iter)>0)*TRUE 
+pred = (predict(fit1.gbm, x.te, n.trees=best.iter)>0)*TRUE 
 
 ## Calculate misclassification error on test data
-mean(pred1!=y.te) 
+mean(pred==y.te) 
 
 ## report the importance score of variables
-summary(fit1.gbm)
+summary(fit.gbm)
 
-
-
-
-##################################################################################################
-## Fit SVM
-##################################################################################################
-library(e1071)
-## Select the best cost parameter with linear kernel
-
-tune1 = tune(svm, train.x=as.matrix(x.tr), train.y=as.factor(y.tr), kernel='linear',
-             range=list(cost=2^seq(-5,5,length=10)), 
-             control=tune.control(sampling='cross', cross=10)
-)
-
-## Fit the "optimal" SVM
-fit1.svm = svm(x.tr, as.factor(y.tr), kernel='linear', cost=1)
-
-## Prediction on test data
-pred1.svm = predict(fit1.svm, x.te)
-mean(pred1.svm!=y.te) 
-
-## Select the best cost parameter with radial kernel (Gaussian kernel)
-## The tuning can take a long time, because there are two parameters to tune.
-tune2 = tune(svm, train.x=as.matrix(x.tr), 
-             train.y=as.factor(y.tr), kernel='radial', range=list(cost=2^seq(-5:5), gamma=2^(-5:5)), 
-             control=tune.control(sampling='cross', cross=10))
-fit2.svm =  svm(x.tr, as.factor(y.tr), kernel='radial', cost=2, gamma=0.03125)
-pred2.svm = predict(fit2.svm, x.te)
-mean(pred2.svm!=y.te) 
+probability$gbm <- predict(fit.gbm, x.te, n.trees=best.iter)
+(aucScore$gbm <- auc(roc( probability$gbm,as.factor(y.te) )) )
+(accuracy$rpart <- unlist(accuracyM(1*(probability$gbm>0), y.true =y.te)))
 
 
 ####### KNN Method
 
 library(class)
-x.transformed <- DataStandardization(x.tr,x.te)
-x.tr <- x.transformed$train
-x.te <- x.transformed$test
-fit.knn5<- knn(train = x.tr, test =x.te, cl =y.tr, k = 5, l = 0, prob = FALSE, use.all = TRUE)
-mean(fit.knn5==y.te)
-fit.knn10<- knn(train = x.tr, test =x.te, cl =y.tr, k = 10, l = 0, prob = FALSE, use.all = TRUE)
-mean(fit.knn10==y.te)
-knn.cv1 <- knn.cv(train = x.tr, cl= as.factor(y.tr), k = 1, l = 0, prob = FALSE, use.all = TRUE)
+#select k
+knn.cv1 <- knn.cv(train = x.tr, cl= as.factor(y.tr), k = 5, l = 0, prob = FALSE, use.all = TRUE)
+
+fit.knn<- knn(train = x.tr, test =x.te, cl =y.tr, k = 5, l = 0, prob = TRUE, use.all = TRUE)
+prob <- numeric(length(y.te))
+prob[which(fit.knn=="1")]=attr(fit.knn,"prob")[which(fit.knn=="1")]
+prob[which(fit.knn=="0")]=1-attr(fit.knn,"prob")[which(fit.knn=="0")]
+mean((1*(prob>0.5))==y.te)
+
+write.csv(data.frame(prob), file="./Results/knnPred.csv")
+probability$knn <- prob
+(aucScore$knn <- auc(roc( probability$knn,as.factor(y.te) )) )
+(accuracy$knn <- unlist(accuracyM(prob>0.5, y.true =y.te)))
+
+save(probability,accuracy,aucScore, file="./Results/results.RData")

@@ -1,0 +1,484 @@
+%!PS-Adobe-3.0
+%%DocumentNeededResources: font Helvetica
+%%+ font Helvetica-Bold
+%%+ font Helvetica-Oblique
+%%+ font Helvetica-BoldOblique
+%%+ font Symbol
+%%DocumentMedia: letter 612 792 0 () ()
+%%Title: R Graphics Output
+%%Creator: R Software
+%%Pages: (atend)
+%%Orientation: Landscape
+%%BoundingBox: 18 18 594 774
+%%EndComments
+%%BeginProlog
+/bp  { gs sRGB 612.00 0 translate 90 rotate gs } def
+% begin .ps.prolog
+/gs  { gsave } bind def
+/gr  { grestore } bind def
+/ep  { showpage gr gr } bind def
+/m   { moveto } bind def
+/l  { rlineto } bind def
+/np  { newpath } bind def
+/cp  { closepath } bind def
+/f   { fill } bind def
+/o   { stroke } bind def
+/c   { newpath 0 360 arc } bind def
+/r   { 4 2 roll moveto 1 copy 3 -1 roll exch 0 exch rlineto 0 rlineto -1 mul 0 exch rlineto closepath } bind def
+/p1  { stroke } bind def
+/p2  { gsave bg fill grestore newpath } bind def
+/p3  { gsave bg fill grestore stroke } bind def
+/p6  { gsave bg eofill grestore newpath } bind def
+/p7  { gsave bg eofill grestore stroke } bind def
+/t   { 5 -2 roll moveto gsave rotate
+       1 index stringwidth pop
+       mul neg 0 rmoveto show grestore } bind def
+/ta  { 4 -2 roll moveto gsave rotate show } bind def
+/tb  { 2 -1 roll 0 rmoveto show } bind def
+/cl  { grestore gsave newpath 3 index 3 index moveto 1 index
+       4 -1 roll lineto  exch 1 index lineto lineto
+       closepath clip newpath } bind def
+/rgb { setrgbcolor } bind def
+/s   { scalefont setfont } bind def
+% end   .ps.prolog
+/sRGB { [ /CIEBasedABC
+          << /DecodeLMN
+               [ { dup 0.03928 le
+                        {12.92321 div}
+                        {0.055 add 1.055 div 2.4 exp }
+                     ifelse
+                 } bind dup dup
+               ]
+             /MatrixLMN [0.412457 0.212673 0.019334
+                         0.357576 0.715152 0.119192
+                         0.180437 0.072175 0.950301]
+             /WhitePoint [0.9505 1.0 1.0890]
+           >>
+         ] setcolorspace } bind def
+/srgb { setcolor } bind def
+%%IncludeResource: font Helvetica
+/Helvetica findfont
+dup length dict begin
+  {1 index /FID ne {def} {pop pop} ifelse} forall
+  /Encoding ISOLatin1Encoding def
+  currentdict
+  end
+/Font1 exch definefont pop
+%%IncludeResource: font Helvetica-Bold
+/Helvetica-Bold findfont
+dup length dict begin
+  {1 index /FID ne {def} {pop pop} ifelse} forall
+  /Encoding ISOLatin1Encoding def
+  currentdict
+  end
+/Font2 exch definefont pop
+%%IncludeResource: font Helvetica-Oblique
+/Helvetica-Oblique findfont
+dup length dict begin
+  {1 index /FID ne {def} {pop pop} ifelse} forall
+  /Encoding ISOLatin1Encoding def
+  currentdict
+  end
+/Font3 exch definefont pop
+%%IncludeResource: font Helvetica-BoldOblique
+/Helvetica-BoldOblique findfont
+dup length dict begin
+  {1 index /FID ne {def} {pop pop} ifelse} forall
+  /Encoding ISOLatin1Encoding def
+  currentdict
+  end
+/Font4 exch definefont pop
+%%IncludeResource: font Symbol
+/Symbol findfont
+dup length dict begin
+  {1 index /FID ne {def} {pop pop} ifelse} forall
+  currentdict
+  end
+/Font5 exch definefont pop
+%%EndProlog
+%%Page: 1 1
+bp
+18.00 18.00 774.00 594.00 cl
+77.04 91.44 743.76 534.96 cl
+/Font1 findfont 12 s
+0 0 0 srgb
+441.05 515.23 (|) .5 0 t
+0.75 setlinewidth
+[] 0 setdash
+1 setlinecap
+1 setlinejoin
+10.00 setmiterlimit
+np
+299.59 254.05 m
+0 264.48 l
+282.92 0 l
+0 -264.48 l
+o
+np
+181.07 232.00 m
+0 22.05 l
+237.05 0 l
+0 -22.05 l
+o
+np
+115.24 223.10 m
+0 8.90 l
+131.66 0 l
+0 -8.90 l
+o
+np
+101.73 214.21 m
+0 8.89 l
+27.01 0 l
+0 -8.89 l
+o
+np
+117.17 205.31 m
+0 8.90 l
+23.15 0 l
+0 -8.90 l
+o
+np
+132.60 202.96 m
+0 2.35 l
+15.43 0 l
+0 -2.35 l
+o
+np
+206.87 211.47 m
+0 11.63 l
+80.06 0 l
+0 -11.63 l
+o
+np
+175.04 201.46 m
+0 10.01 l
+63.66 0 l
+0 -10.01 l
+o
+np
+163.47 192.57 m
+0 8.89 l
+23.15 0 l
+0 -8.89 l
+o
+np
+178.90 190.32 m
+0 2.25 l
+15.43 0 l
+0 -2.25 l
+o
+np
+217.48 192.57 m
+0 8.89 l
+42.44 0 l
+0 -8.89 l
+o
+np
+209.77 189.61 m
+0 2.96 l
+15.43 0 l
+0 -2.96 l
+o
+np
+248.35 183.67 m
+0 8.90 l
+23.15 0 l
+0 -8.90 l
+o
+np
+240.63 180.00 m
+0 3.67 l
+15.44 0 l
+0 -3.67 l
+o
+np
+394.97 223.10 m
+0 8.90 l
+46.30 0 l
+0 -8.90 l
+o
+np
+364.10 212.49 m
+0 10.61 l
+61.73 0 l
+0 -10.61 l
+o
+np
+331.30 203.59 m
+0 8.90 l
+65.60 0 l
+0 -8.90 l
+o
+np
+313.94 194.69 m
+0 8.90 l
+34.73 0 l
+0 -8.90 l
+o
+np
+302.37 185.80 m
+0 8.89 l
+23.15 0 l
+0 -8.89 l
+o
+np
+317.80 183.76 m
+0 2.04 l
+15.43 0 l
+0 -2.04 l
+o
+np
+383.39 194.69 m
+0 8.90 l
+27.01 0 l
+0 -8.90 l
+o
+np
+371.82 185.80 m
+0 8.89 l
+23.15 0 l
+0 -8.89 l
+o
+np
+364.10 182.23 m
+0 3.57 l
+15.43 0 l
+0 -3.57 l
+o
+np
+496.25 204.03 m
+0 50.02 l
+172.52 0 l
+0 -50.02 l
+o
+np
+474.06 192.09 m
+0 11.94 l
+44.37 0 l
+0 -11.94 l
+o
+np
+456.70 183.19 m
+0 8.90 l
+34.72 0 l
+0 -8.90 l
+o
+np
+479.85 174.29 m
+0 8.90 l
+23.15 0 l
+0 -8.90 l
+o
+np
+472.13 172.25 m
+0 2.04 l
+15.44 0 l
+0 -2.04 l
+o
+np
+630.05 195.13 m
+0 8.90 l
+77.44 0 l
+0 -8.90 l
+o
+np
+587.34 186.24 m
+0 8.89 l
+85.43 0 l
+0 -8.89 l
+o
+np
+533.87 170.52 m
+0 15.72 l
+106.94 0 l
+0 -15.72 l
+o
+np
+624.30 161.62 m
+0 8.90 l
+33.03 0 l
+0 -8.90 l
+o
+np
+606.69 152.73 m
+0 8.89 l
+35.21 0 l
+0 -8.89 l
+o
+np
+586.92 139.25 m
+0 13.48 l
+39.55 0 l
+0 -13.48 l
+o
+np
+562.80 130.35 m
+0 8.90 l
+48.23 0 l
+0 -8.90 l
+o
+np
+549.30 121.46 m
+0 8.89 l
+27.01 0 l
+0 -8.89 l
+o
+np
+564.73 112.56 m
+0 8.90 l
+23.15 0 l
+0 -8.90 l
+o
+np
+580.17 107.87 m
+0 4.69 l
+15.43 0 l
+0 -4.69 l
+o
+np
+695.92 186.24 m
+0 8.89 l
+23.15 0 l
+0 -8.89 l
+o
+np
+688.20 181.64 m
+0 4.60 l
+15.43 0 l
+0 -4.60 l
+o
+389.19 522.75 (kw_a) 0 ta
+-0.240 (vg_a) tb
+-0.240 (vg< 2828) tb gr
+299.59 257.05 (timedelta< 611.5) .5 0 t
+87.19 236.15 (self_ref) 0 ta
+-0.360 (erence_a) tb
+-0.240 (vg_sharess< 1882) tb gr
+70.05 226.75 (is_w) 0 ta
+-0.120 (eek) tb
+-0.240 (end< 0.5) tb gr
+81.71 217.85 (LD) 0 ta
+-0.480 (A_02>=0.6195) tb gr
+93.28 208.95 (LD) 0 ta
+-0.480 (A_03>=0.0334) tb gr
+246.90 226.75 (data_channel_is_socmed< 0.5) .5 0 t
+206.87 215.11 (data_channel_is_tech< 0.5) .5 0 t
+129.85 205.10 (is_w) 0 ta
+-0.120 (eek) tb
+-0.240 (end< 0.5) tb gr
+131.25 196.78 (kw_min_a) 0 ta
+-0.240 (vg>=891.6) tb gr
+186.84 205.67 (kw_a) 0 ta
+-0.240 (vg_a) tb
+-0.240 (vg< 2530) tb gr
+146.43 196.70 (n_unique_tok) 0 ta
+-0.240 (ens>=0.3652) tb gr
+160.85 196.70 (n_non_stop_unique_tok) 0 ta
+-0.240 (ens>=0.7097) tb gr
+248.35 186.68 (timedelta>=419.5) .5 0 t
+372.92 235.64 (is_w) 0 ta
+-0.120 (eek) tb
+-0.240 (end< 0.5) tb gr
+304.09 226.69 (self_ref) 0 ta
+-0.360 (erence_min_shares< 2450) tb gr
+310.57 216.70 (kw_max_a) 0 ta
+-0.240 (vg< 3431) tb gr
+286.11 207.23 (LD) 0 ta
+-0.480 (A_04< 0.8398) tb gr
+251.08 198.81 (w) 0 ta
+-0.120 (eekda) tb
+-0.360 (y_is_fr) tb
+0.180 (ida) tb
+-0.360 (y< 0.5) tb gr
+245.97 190.01 (a) 0 ta
+-0.240 (vg_positiv) tb
+-0.300 (e_polar) tb
+0.180 (ity< 0.3882) tb gr
+351.70 207.23 (LD) 0 ta
+-0.480 (A_04< 0.6012) tb gr
+383.39 198.34 (data_channel_is_socmed< 0.5) .5 0 t
+272.74 189.93 (n_non_stop_unique_tok) 0 ta
+-0.240 (ens>=0.6873) tb gr
+483.45 257.69 (data_channel_is_enter) 0 ta
+0.480 (tainment>=0.5) tb gr
+451.06 207.67 (is_w) 0 ta
+-0.120 (eek) tb
+-0.240 (end< 0.5) tb gr
+422.20 196.30 (kw_a) 0 ta
+-0.240 (vg_a) tb
+-0.240 (vg< 4005) tb gr
+400.55 186.77 (self_ref) 0 ta
+-0.360 (erence_min_shares< 2750) tb gr
+412.30 177.94 (n_tok) 0 ta
+-0.240 (ens_content< 943.5) tb gr
+574.89 208.18 (self_ref) 0 ta
+-0.360 (erence_a) tb
+-0.240 (vg_sharess< 2751) tb gr
+584.86 198.78 (is_w) 0 ta
+-0.120 (eek) tb
+-0.240 (end< 0.5) tb gr
+540.31 189.88 (LD) 0 ta
+-0.480 (A_02>=0.3864) tb gr
+569.76 174.65 (n_unique_tok) 0 ta
+-0.240 (ens>=0.4527) tb gr
+624.30 164.63 (timedelta< 592.5) .5 0 t
+515.82 156.31 (self_ref) 0 ta
+-0.360 (erence_min_shares< 1350) tb gr
+533.39 143.46 (kw_a) 0 ta
+-0.240 (vg_min< 360.8) tb gr
+491.75 134.49 (n_unique_tok) 0 ta
+-0.240 (ens>=0.6753) tb gr
+505.77 125.67 (kw_a) 0 ta
+-0.240 (vg_max>=4.446e+05) tb gr
+587.88 116.20 (kw_min_max< 1.885e+04) .5 0 t
+622.78 199.31 (min_positiv) 0 ta
+-0.300 (e_polar) tb
+0.180 (ity>=0.04167) tb gr
+648.88 189.88 (LD) 0 ta
+-0.480 (A_02>=0.6004) tb gr
+101.73 202.90 (0) .5 0 t
+117.17 194.01 (0) .5 0 t
+132.60 191.66 (0) .5 0 t
+148.03 191.54 (1) .5 0 t
+163.47 181.26 (0) .5 0 t
+178.90 179.02 (0) .5 0 t
+194.33 178.90 (1) .5 0 t
+209.77 178.30 (0) .5 0 t
+225.20 178.19 (1) .5 0 t
+240.63 168.69 (0) .5 0 t
+256.07 168.58 (1) .5 0 t
+271.50 172.25 (1) .5 0 t
+286.93 200.05 (1) .5 0 t
+302.37 174.49 (0) .5 0 t
+317.80 172.45 (0) .5 0 t
+333.23 172.34 (1) .5 0 t
+348.67 183.28 (1) .5 0 t
+364.10 170.92 (0) .5 0 t
+379.53 170.81 (1) .5 0 t
+394.97 174.38 (1) .5 0 t
+410.40 183.28 (1) .5 0 t
+425.83 201.07 (1) .5 0 t
+441.27 211.69 (1) .5 0 t
+456.70 171.89 (0) .5 0 t
+472.13 160.95 (0) .5 0 t
+487.57 160.83 (1) .5 0 t
+503.00 162.88 (1) .5 0 t
+518.43 180.67 (1) .5 0 t
+533.87 159.21 (0) .5 0 t
+549.30 110.15 (0) .5 0 t
+564.73 101.26 (0) .5 0 t
+580.17 96.56 (0) .5 0 t
+595.60 96.45 (1) .5 0 t
+611.03 118.94 (1) .5 0 t
+626.47 127.83 (1) .5 0 t
+641.90 141.31 (1) .5 0 t
+657.33 150.20 (1) .5 0 t
+672.77 174.82 (1) .5 0 t
+688.20 170.34 (0) .5 0 t
+703.63 170.23 (1) .5 0 t
+719.07 174.82 (1) .5 0 t
+ep
+%%Trailer
+%%Pages: 1
+%%EOF
